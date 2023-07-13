@@ -9,12 +9,21 @@ from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddi
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain.document_loaders import TextLoader
+import torch
+from transformers import pipeline
+from langchain import PromptTemplate, LLMChain
+from langchain.llms import HuggingFacePipeline
+
+
+# use dolly v2-3b
 
 import os
 os.environ['CURL_CA_BUNDLE'] = '' # per https://stackoverflow.com/a/75746105
 
 
 def chatsection(prompt):
+    
+
     raw_documents = TextLoader('test.txt',encoding='utf8').load()
     text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=0)
     documents = text_splitter.split_documents(raw_documents)
@@ -30,20 +39,21 @@ def chatsection(prompt):
     print("Conducting similarity search")
     docs = db.similarity_search(query)
     # print(docs[0].page_content)
-
-    model_name = "deepset/roberta-base-squad2"
-
-
-    nlp = pipeline('question-answering', model=model_name, tokenizer=model_name)
-    QA_input = {
-        'question': query,
-        'context': docs[0].page_content
-    }
-    res = nlp(QA_input)
+    # template for an instruction with input
+    prompt_with_context = PromptTemplate(
+    input_variables=["instruction", "context"],
+    template="{instruction}\n\nInput:\n{context}")
+    
+    generate_text = pipeline(model="databricks/dolly-v2-3b", torch_dtype=torch.bfloat16,
+                         trust_remote_code=True, device_map="auto", return_full_text=True)
+    hf_pipeline = HuggingFacePipeline(pipeline=generate_text)
+    llm_context_chain = LLMChain(llm=hf_pipeline, prompt=prompt_with_context)
+    
+    
 
     # b) Load model & tokenizer
-    model = AutoModelForQuestionAnswering.from_pretrained(model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    print(res)
-    return res
+    answer = llm_context_chain.predict(instruction=query, context=docs[0].page_content).lstrip()
+    
+    print(answer)
+    return answer
