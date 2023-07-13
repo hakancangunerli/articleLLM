@@ -1,7 +1,8 @@
 import streamlit as st
-from chat import chatsection
 from streamlit_chat import message
-
+import import_ipynb # for dbricks, it'll be dbutils or %run
+from test_notebook import chatsection
+ 
 st.title("ChatBot Interface")
 
 import os
@@ -25,7 +26,7 @@ if prompt := st.chat_input("What is up?"):
             message_placeholder = st.empty()
             full_response = ""
             result_from_chat = chatsection(prompt)
-            print(prompt, result_from_chat['answer'])
+            print(prompt, result_from_chat)
             full_response += chatsection(prompt)['answer']
             message_placeholder.markdown(full_response + "▌")
             message_placeholder.markdown(full_response)
