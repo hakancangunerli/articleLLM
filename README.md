@@ -10,6 +10,7 @@ langchain
 torch
 transformers
 streamlit
+chromadb
 
 
 # Reference
