@@ -1,7 +1,18 @@
-# articleLLM
+# article-LLM 
+This is a chatbot powered by the Large Language Model (LLM) designed to assist users in reading articles. The chatbot utilizes the advanced natural language processing capabilities of the LLM to summarize and provide key insights from articles provided by the users. We've used dolly v2 3b parameter in order to ensure that it's using a databricks module. 
 
-a chatbot for reading articles LLM
+# Modules and Languages used
 
+import_ipynb
+streamlit
+streamlit_chat
+langchain
+torch
+transformers
+streamlit
+
+
+# Reference
 Stephen Wolfram's "Will AIs Take All Our Jobs and End Human History—or Not? Well, It’s Complicated…"
 <https://writings.stephenwolfram.com/2023/03/will-ais-take-all-our-jobs-and-end-human-history-or-not-well-its-complicated/>
 
